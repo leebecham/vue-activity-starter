@@ -26,7 +26,11 @@
           <div class="control">
             <select v-model="newActivity.category" class="select">
               <option disabled value>Please Select One</option>
-              <option v-for="category in categories" :key="category.id">{{ category.text }}</option>
+              <option
+                v-for="category in categories"
+                :key="category.id"
+                :value="category.id"
+              >{{ category.text }}</option>
             </select>
           </div>
         </div>
@@ -61,8 +65,12 @@ import {
   fetchCategories,
   createActivityAPI
 } from "@/api";
+import store from "@/store";
 
 export default {
+  props: {
+    categories: { type: Object, required: true }
+  },
   data() {
     return {
       isFormDisplayed: false,
@@ -70,8 +78,7 @@ export default {
         title: "",
         notes: "",
         category: ""
-      },
-      categories: {}
+      }
     };
   },
   computed: {
@@ -84,16 +91,13 @@ export default {
     }
   },
 
-  created() {
-    this.categories = fetchCategories();
-  },
+  created() {},
 
   methods: {
     createActivity() {
-      createActivityAPI(this.newActivity).then(activity => {
-        this.$emit("activityCreated", { ...activity });
+      store.createActivity({ ...this.newActivity }).then(activity => {
         this.resetActivity();
-        this.toggleFormVisibility();
+        this.isFormDisplayed = false;
       });
     },
 
